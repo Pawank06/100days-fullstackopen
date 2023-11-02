@@ -23,7 +23,7 @@ This repository is a testament to my commitment to completing the Full Stack Ope
 ## Progress
 
 - [x] Part 0: Fundamentals of Web Apps
-- [ ] Part 1: Introduction to React
+- [x] Part 1: Introduction to React
 - [ ] Part 2: Communicating with the Server
 - [ ] Part 3: Programming a Server with NodeJS and Express
 - [ ] Part 4: Testing Express Servers, User Administration
