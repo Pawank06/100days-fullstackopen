@@ -26,7 +26,8 @@ const Votes = ({anecdotes, max}) => {
         {anecdotes} has {max} votes
       </p>
     </>
-  );
+  );newVote[selected] += 1;
+  setVote(newVote);
 };
 
 const App = () => {
@@ -55,6 +56,7 @@ const App = () => {
     newVote[selected] += 1;
     setVote(newVote);
     console.log(newVote);
+    
   };
 
   const max = Math.max(...vote);
@@ -63,6 +65,11 @@ const App = () => {
 
   return (
     <div>
+      
+      <div></div>
+  
+      <div className=""></div>
+      
       <h1>Anecdote of the day</h1>
       <Anecdote anecdotes={anecdotes[selected]} vote={vote[selected]} />
 
