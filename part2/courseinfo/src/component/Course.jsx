@@ -5,7 +5,6 @@ const Header = (props) => {
 }
 
 const Parts = (props) => {
-    console.log(props)
     return(
         <div>
             <p>{props.parts.name} {props.parts.exercises}</p>
