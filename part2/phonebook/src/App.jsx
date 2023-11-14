@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import noteService from "./services/notes";
 
 const Filter = (props) => {
   return (
@@ -26,12 +27,35 @@ const PersonForm = (props) => {
 };
 
 const Persons = (props) => {
+  const handleDelete = (id, name) => {
+    // Use window.confirm to get user confirmation
+    const confirmDelete = window.confirm(`Delete ${name}?`);
+
+    if (confirmDelete) {
+      // Make an HTTP DELETE request to delete the person with the specified id
+      noteService
+        .delete(id)
+        .then(() => {
+          // Update the state to reflect the deletion
+          const updatedPersons = props.persons.filter(
+            (person) => person.id !== id
+          );
+          props.setPersons(updatedPersons);
+        })
+        .catch((error) => {
+          console.error("Error deleting person:", error);
+        });
+    }
+  };
   return (
     <div>
       {props.filteredPersons.map((person, index) => (
         <div key={index}>
           {" "}
-          {person.name} {person.number}
+          {person.name} {person.number}{" "}
+          <button onClick={() => handleDelete(person.id, person.name)}>
+            delete
+          </button>
         </div>
       ))}
     </div>
@@ -39,32 +63,63 @@ const Persons = (props) => {
 };
 
 const App = () => {
-  const [persons, setPersons] = useState([
-    { name: "Arto Hellas", number: "985432105" },
-  ]);
+  const [persons, setPersons] = useState([]);
   const [newName, setNewName] = useState("");
   const [newNumber, setNewNumber] = useState("");
   const [search, setSearch] = useState("");
 
+  useEffect(() => {
+    console.log("effect");
+
+    noteService.getAll().then((initialPerson) => {
+      console.log("promise fulfilled");
+      setPersons(initialPerson);
+    });
+  }, []);
+
   const addNumber = (event) => {
     event.preventDefault();
 
-    if (persons.some((person) => person.name === newName)) {
-      alert(`${newName} is already added to phonebook`);
-      return;
+    const existingPerson = persons.find((person) => person.name === newName);
+
+    if (existingPerson) {
+      const confirmUpdate = window.confirm(
+        `${newName} is already added to phonebook, replace the old number?`
+      );
+
+      if (!confirmUpdate) {
+        return; // User canceled the update
+      }
+      console.log(existingPerson.id)
+
+      // Make an HTTP PUT request to update the phone number
+      noteService
+        .update(existingPerson.id, { ...existingPerson, number: newNumber })
+        .then((updatedPerson) => {
+          
+          setPersons(
+            persons.map((person) =>
+              person.id === updatedPerson.id ? updatedPerson : person
+            )
+          );
+          setNewName("");
+          setNewNumber("");
+        })
+    } else {
+      console.log("button clicked", event.target);
+      const personObject = {
+        name: newName,
+        number: newNumber,
+        important: Math.random() < 0.5,
+      };
+
+      noteService.create(personObject).then((returnedPerson) => {
+        console.log(returnedPerson);
+        setPersons(persons.concat(returnedPerson));
+        setNewName("");
+        setNewNumber("");
+      });
     }
-
-    console.log("button clicked", event.target);
-    const personObject = {
-      name: newName,
-      number: newNumber,
-      id: persons.length + 1,
-      important: Math.random() < 0.5,
-    };
-
-    setPersons(persons.concat(personObject));
-    setNewName("");
-    setNewNumber("");
   };
 
   const onChangeName = (event) => {
@@ -76,7 +131,7 @@ const App = () => {
     setNewNumber(event.target.value);
   };
 
-  const handleSearch = () => {
+  const handleSearch = (event) => {
     setSearch(event.target.value);
   };
 
@@ -100,7 +155,11 @@ const App = () => {
       />
 
       <h2>Numbers</h2>
-      <Persons filteredPersons={filteredPersons}/>
+      <Persons
+        persons={persons}
+        setPersons={setPersons}
+        filteredPersons={filteredPersons}
+      />
     </div>
   );
 };
