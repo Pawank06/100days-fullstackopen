@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import noteService from "./services/notes";
+import Notification from "./component/Notification";
 
 const Filter = (props) => {
   return (
@@ -43,8 +44,13 @@ const Persons = (props) => {
           props.setPersons(updatedPersons);
         })
         .catch((error) => {
-          console.error("Error deleting person:", error);
+          props.setMessage(`${name} is already deleted`)
+          setTimeout(() => {
+            props.setMessage(null)
+          }, 5000)
+          props.setPersons(props.persons.filter(n => n.id !== id))
         });
+
     }
   };
   return (
@@ -67,6 +73,7 @@ const App = () => {
   const [newName, setNewName] = useState("");
   const [newNumber, setNewNumber] = useState("");
   const [search, setSearch] = useState("");
+  const [message, setMessage] = useState(null)
 
   useEffect(() => {
     console.log("effect");
@@ -102,6 +109,7 @@ const App = () => {
               person.id === updatedPerson.id ? updatedPerson : person
             )
           );
+          
           setNewName("");
           setNewNumber("");
         })
@@ -118,6 +126,10 @@ const App = () => {
         setPersons(persons.concat(returnedPerson));
         setNewName("");
         setNewNumber("");
+        setMessage(`${newName} is Added`)
+        setTimeout(() => {
+          setMessage(null)
+        }, 5000)
       });
     }
   };
@@ -142,6 +154,7 @@ const App = () => {
   return (
     <div>
       <h2>Phonebook</h2>
+      <Notification message={message}/>
 
       <Filter handleSearch={handleSearch} search={search} />
 
@@ -159,6 +172,7 @@ const App = () => {
         persons={persons}
         setPersons={setPersons}
         filteredPersons={filteredPersons}
+        setMessage = {setMessage}
       />
     </div>
   );
