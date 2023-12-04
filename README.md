@@ -24,7 +24,7 @@ This repository is a testament to my commitment to completing the Full Stack Ope
 
 - [x] Part 0: Fundamentals of Web Apps
 - [x] Part 1: Introduction to React
-- [ ] Part 2: Communicating with the Server
+- [x] Part 2: Communicating with the Server
 - [ ] Part 3: Programming a Server with NodeJS and Express
 - [ ] Part 4: Testing Express Servers, User Administration
 - [ ] Part 5: Testing React Apps, Custom Hooks
